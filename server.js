@@ -36,6 +36,11 @@ const generateAuthCode = () => {
     return Math.floor(10000 + Math.random() * 90000).toString();
 };
 
+const generateColor = (index) => {
+    const colors = ['red', 'blue', 'green', 'orange', 'purple', 'brown', 'pink', 'cyan', 'lime', 'magenta'];
+    return colors[index % colors.length];
+};
+
 const rooms = {};
 
 io.on('connection', (socket) => {
@@ -46,18 +51,29 @@ io.on('connection', (socket) => {
             rooms[authCode] = [];
         }
 
-        socket.join(authCode);
-        rooms[authCode].push({ id: socket.id, userName, profilePic });
+        const userColor = generateColor(rooms[authCode].length);
+        const user = { id: socket.id, userName, profilePic, color: userColor };
 
+        rooms[authCode].push(user);
+
+        socket.join(authCode);
         socket.to(authCode).emit('notification', `${userName} has joined room ${authCode}`);
 
         socket.on('chat message', (msg) => {
-            io.to(authCode).emit('chat message', { userName, profilePic, msg });
+            const roomUsers = rooms[authCode];
+            const mentionedUser = roomUsers.find(user => msg.includes(`@${user.userName}`));
+
+            if (mentionedUser) {
+                io.to(mentionedUser.id).emit('mention notification', `${userName} mentioned you in room ${authCode}`);
+            }
+
+            io.to(authCode).emit('chat message', { userName, profilePic, msg, color: user.color });
         });
 
         socket.on('disconnect', () => {
-            const user = rooms[authCode].find(u => u.id === socket.id);
-            rooms[authCode] = rooms[authCode].filter(u => u.id !== socket.id);
+            const userIndex = rooms[authCode].findIndex(u => u.id === socket.id);
+            const user = rooms[authCode][userIndex];
+            rooms[authCode].splice(userIndex, 1);
             if (rooms[authCode].length === 0) {
                 delete rooms[authCode];
             } else {
