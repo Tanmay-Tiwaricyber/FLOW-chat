@@ -29,7 +29,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 app.post('/upload', upload.single('profilePic'), (req, res) => {
-    res.json({ filePath: `/uploads/${req.file.filename}` });
+    res.json({ filePath: `uploads/${req.file.filename}` });
 });
 
 const generateAuthCode = () => {
