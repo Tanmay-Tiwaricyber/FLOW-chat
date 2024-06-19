@@ -57,11 +57,13 @@ form.addEventListener('submit', (e) => {
     }
 });
 
-socket.on('chat message', ({ userName, profilePic, msg }) => {
+socket.on('chat message', ({ userName, profilePic, msg, color }) => {
     const item = document.createElement('div');
-    item.innerHTML = `<img src="${profilePic}" alt="${userName}" class="profile-pic"><strong>${userName}:</strong> ${msg}`;
+    const coloredMsg = msg.replace(/@(\w+)/g, `<span style="color: ${color};">@\$1</span>`);
+    item.innerHTML = `<img src="${profilePic}" alt="${userName}" class="profile-pic"><strong>${userName}:</strong> ${coloredMsg}`;
     messages.appendChild(item);
     messages.scrollTop = messages.scrollHeight;
+    showNotification(`${userName}: ${msg}`);
 });
 
 socket.on('notification', (msg) => {
@@ -70,6 +72,12 @@ socket.on('notification', (msg) => {
     item.style.fontStyle = 'italic';
     messages.appendChild(item);
     messages.scrollTop = messages.scrollHeight;
+    showNotification(msg);
+});
+
+socket.on('mention notification', (msg) => {
+    alert(msg);
+    showNotification(msg);
 });
 
 toggleThemeButton.addEventListener('click', () => {
@@ -80,4 +88,24 @@ toggleThemeButton.addEventListener('click', () => {
 function switchToChat() {
     authContainer.classList.add('hidden');
     chatContainer.classList.remove('hidden');
+    requestNotificationPermission();
+}
+
+function requestNotificationPermission() {
+    if ('Notification' in window && Notification.permission !== 'granted') {
+        Notification.requestPermission().then(permission => {
+            if (permission !== 'granted') {
+                alert('Notification permission denied. You will not receive desktop notifications.');
+            }
+        });
+    }
+}
+
+function showNotification(message) {
+    if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('Chat App', {
+            body: message,
+            icon: 'chat-icon.png'  
+        });
+    }
 }
