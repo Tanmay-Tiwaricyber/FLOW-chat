@@ -4,13 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Application</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
     <div class="auth-container">
         <input type="text" id="userNameInput" placeholder="Enter your name">
         <input type="text" id="authCodeInput" placeholder="Enter room code">
-        <input type="file" id="profilePicInput" accept="image/*">
+        <input type="file" id="profilePicInput" accept="images/*">
+        <div id="defaultProfilePics" class="default-profile-pics">
+            <p>Select a Animated profile Avatar</p>
+            <div class="default-pics-grid">
+            </div>
+        </div>
         <button id="joinRoomButton">Join Room</button>
         <button id="createRoomButton">Create Room</button>
     </div>
@@ -27,6 +32,6 @@
         </form>
     </div>
     <script src="/socket.io/socket.io.js"></script>
-    <script src="chat.js"></script>
+    <script src="/chat.js"></script>
 </body>
 </html>
