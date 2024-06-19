@@ -3,24 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat App</title>
+    <title>Chat Application</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="auth-container">
-        <input id="userNameInput" placeholder="Enter your name" />
-        <input id="authCodeInput" placeholder="Enter room code or create new" />
-        <input type="file" id="profilePicInput" accept="image/*" />
+        <input type="text" id="userNameInput" placeholder="Enter your name">
+        <input type="text" id="authCodeInput" placeholder="Enter room code">
+        <input type="file" id="profilePicInput" accept="image/*">
         <button id="joinRoomButton">Join Room</button>
         <button id="createRoomButton">Create Room</button>
     </div>
     <div class="chat-container hidden">
         <div class="header">
-            <button id="toggleThemeButton">Toggle Theme</button>
+            <button id="toggleThemeButton">Dark Mode</button>
         </div>
-        <div id="messages" class="messages"></div>
+        <div class="chat-content">
+            <div id="messages" class="messages"></div>
+        </div>
         <form id="form" class="form">
-            <input id="input" autocomplete="off" placeholder="Type a message..." />
+            <input id="input" autocomplete="off">
             <button>Send</button>
         </form>
     </div>
