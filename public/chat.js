@@ -109,3 +109,62 @@ function showNotification(message) {
         });
     }
 }
+
+const defaultProfilePics = document.querySelector('.default-pics-grid');
+
+let selectedProfilePic = null;
+
+const defaultPics = [
+    'images/default1.gif',
+    'images/default2.gif',
+    'images/default3.gif',
+    'images/default4.gif',
+    'images/default5.gif',
+    'images/default6.gif',
+    
+];
+
+defaultPics.forEach(pic => {
+    const img = document.createElement('img');
+    img.src = pic;
+    img.classList.add('default-pic');
+    img.addEventListener('click', () => {
+        selectedProfilePic = pic;
+        document.querySelectorAll('.default-pic').forEach(p => p.classList.remove('selected'));
+        img.classList.add('selected');
+    });
+    defaultProfilePics.appendChild(img);
+});
+
+joinRoomButton.addEventListener('click', () => {
+    const userName = userNameInput.value.trim();
+    const authCode = authCodeInput.value.trim();
+    const profilePic = profilePicInput.files[0];
+
+    if (userName && authCode && (profilePic || selectedProfilePic)) {
+        if (profilePic) {
+            const formData = new FormData();
+            formData.append('profilePic', profilePic);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                currentUser = { userName, profilePic: data.filePath };
+                socket.emit('join room', { authCode, userName, profilePic: data.filePath });
+                switchToChat(authCode);
+            })
+            .catch(error => {
+                console.error('Error uploading profile picture:', error);
+            });
+        } else {
+            currentUser = { userName, profilePic: selectedProfilePic };
+            socket.emit('join room', { authCode, userName, profilePic: selectedProfilePic });
+            switchToChat(authCode);
+        }
+    } else {
+        alert('Please enter your name, the room code, and select a profile picture. If You Select Animated avatar then just hit okkkk');
+    }
+});
