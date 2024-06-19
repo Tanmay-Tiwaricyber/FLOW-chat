@@ -6,6 +6,7 @@
     --input-background-color: #fff;
     --input-text-color: #000;
     --message-background-color: #f1f1f1;
+    --mention-background-color: #e0f7fa;
 }
 
 body.dark-mode {
@@ -16,6 +17,7 @@ body.dark-mode {
     --input-background-color: #333;
     --input-text-color: #fff;
     --message-background-color: #333;
+    --mention-background-color: #455a64;
 }
 
 body {
@@ -72,6 +74,9 @@ body {
 .chat-container {
     display: flex;
     flex-direction: column;
+    height: 100%;
+    max-height: 600px;
+    width: 100%;
 }
 
 .header {
@@ -79,6 +84,13 @@ body {
     justify-content: flex-end;
     padding: 10px;
     background-color: var(--input-background-color);
+}
+
+.chat-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
 }
 
 .messages {
@@ -99,6 +111,10 @@ body {
     color: var(--text-color);
     display: flex;
     align-items: center;
+}
+
+.messages .mention {
+    background-color: var(--mention-background-color);
 }
 
 .form {
@@ -136,4 +152,91 @@ button:hover {
     border-radius: 50%;
     margin-right: 10px;
     vertical-align: middle;
+}
+
+.mention {
+    color: red;
+    font-weight: bold;
+}
+
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .auth-container, .chat-container {
+        max-width: 90%;
+        padding: 10px;
+    }
+
+    .messages div {
+        font-size: 14px;
+    }
+
+    .form #input {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    button {
+        padding: 8px 16px;
+    }
+
+    .profile-pic {
+        width: 25px;
+        height: 25px;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-container, .chat-container {
+        max-width: 100%;
+        padding: 5px;
+    }
+
+    .messages div {
+        font-size: 12px;
+    }
+
+    .form #input {
+        font-size: 12px;
+        padding: 6px;
+    }
+
+    button {
+        padding: 6px 12px;
+    }
+
+    .profile-pic {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+/* Additional responsive styles for better layout */
+@media (min-width: 769px) {
+    .auth-container, .chat-container {
+        max-width: 500px;
+        padding: 20px;
+    }
+
+    .messages {
+        padding: 15px;
+    }
+
+    .messages div {
+        font-size: 16px;
+    }
+
+    .form #input {
+        font-size: 16px;
+        padding: 10px;
+    }
+
+    button {
+        padding: 10px 20px;
+    }
+
+    .profile-pic {
+        width: 35px;
+        height: 35px;
+    }
 }
