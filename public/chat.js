@@ -35,7 +35,7 @@ joinRoomButton.addEventListener('click', () => {
             console.error('Error uploading profile picture:', error);
         });
     } else {
-        alert('Please enter your name, the room code, and select a profile picture.');
+        alert('Please enter your name, the room code, and select a profile picture. If You Select Animated avatar then just hit okkkk');
     }
 });
 
