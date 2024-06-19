@@ -30,6 +30,7 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
+    font-family: "Playwrite FR Moderne", cursive;
     transition: background-color 0.3s, color 0.3s;
 }
 
