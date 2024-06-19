@@ -1,4 +1,3 @@
-// chat.js
 const socket = io();
 
 const userNameInput = document.getElementById('userNameInput');
@@ -12,131 +11,18 @@ const messages = document.getElementById('messages');
 const authContainer = document.querySelector('.auth-container');
 const chatContainer = document.querySelector('.chat-container');
 const toggleThemeButton = document.getElementById('toggleThemeButton');
+const chatRoomInfo = document.getElementById('chatRoomInfo'); // New element reference
 
-joinRoomButton.addEventListener('click', () => {
-    const userName = userNameInput.value.trim();
-    const authCode = authCodeInput.value.trim();
-    const profilePic = profilePicInput.files[0];
-    
-    if (userName && authCode && profilePic) {
-        const formData = new FormData();
-        formData.append('profilePic', profilePic);
-
-        fetch('/upload', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            socket.emit('join room', { authCode, userName, profilePic: data.filePath });
-            switchToChat();
-        })
-        .catch(error => {
-            console.error('Error uploading profile picture:', error);
-        });
-    } else {
-        alert('Please enter your name, the room code, and select a profile picture. If You Select Animated avatar then just hit okkkk');
-    }
-});
-
-createRoomButton.addEventListener('click', () => {
-    socket.emit('create room');
-});
-
-socket.on('room created', (authCode) => {
-    alert(`Room created with code: ${authCode}`);
-    authCodeInput.value = authCode;
-});
-
-form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const msg = input.value.trim();
-    if (msg) {
-        socket.emit('chat message', msg);
-        input.value = '';
-    }
-});
-
-socket.on('chat message', ({ userName, profilePic, msg, color }) => {
-    const item = document.createElement('div');
-    const coloredMsg = msg.replace(/@(\w+)/g, `<span style="color: ${color};">@\$1</span>`);
-    item.innerHTML = `<img src="${profilePic}" alt="${userName}" class="profile-pic"><strong>${userName}:</strong> ${coloredMsg}`;
-    messages.appendChild(item);
-    messages.scrollTop = messages.scrollHeight;
-    showNotification(`${userName}: ${msg}`);
-});
-
-socket.on('notification', (msg) => {
-    const item = document.createElement('div');
-    item.textContent = msg;
-    item.style.fontStyle = 'italic';
-    messages.appendChild(item);
-    messages.scrollTop = messages.scrollHeight;
-    showNotification(msg);
-});
-
-socket.on('mention notification', (msg) => {
-    alert(msg);
-    showNotification(msg);
-});
-
-toggleThemeButton.addEventListener('click', () => {
-    document.body.classList.toggle('dark-mode');
-    toggleThemeButton.textContent = document.body.classList.contains('dark-mode') ? 'Light Mode' : 'Dark Mode';
-});
-
-function switchToChat() {
-    authContainer.classList.add('hidden');
-    chatContainer.classList.remove('hidden');
-    requestNotificationPermission();
-}
-
-function requestNotificationPermission() {
-    if ('Notification' in window && Notification.permission !== 'granted') {
-        Notification.requestPermission().then(permission => {
-            if (permission !== 'granted') {
-                alert('Notification permission denied. You will not receive desktop notifications.');
-            }
-        });
-    }
-}
-
-function showNotification(message) {
-    if ('Notification' in window && Notification.permission === 'granted') {
-        new Notification('Chat App', {
-            body: message,
-            icon: 'chat-icon.png'  
-        });
-    }
-}
-
-const defaultProfilePics = document.querySelector('.default-pics-grid');
+joinRoomButton.addEventListener('click', handleJoinRoom);
+createRoomButton.addEventListener('click', handleCreateRoom);
+form.addEventListener('submit', handleSendMessage);
+toggleThemeButton.addEventListener('click', toggleTheme);
 
 let selectedProfilePic = null;
+let currentUser = null;
 
-const defaultPics = [
-    'images/default1.gif',
-    'images/default2.gif',
-    'images/default3.gif',
-    'images/default4.gif',
-    'images/default5.gif',
-    'images/default6.gif',
-    
-];
-
-defaultPics.forEach(pic => {
-    const img = document.createElement('img');
-    img.src = pic;
-    img.classList.add('default-pic');
-    img.addEventListener('click', () => {
-        selectedProfilePic = pic;
-        document.querySelectorAll('.default-pic').forEach(p => p.classList.remove('selected'));
-        img.classList.add('selected');
-    });
-    defaultProfilePics.appendChild(img);
-});
-
-joinRoomButton.addEventListener('click', () => {
+// Function to handle joining a room
+function handleJoinRoom() {
     const userName = userNameInput.value.trim();
     const authCode = authCodeInput.value.trim();
     const profilePic = profilePicInput.files[0];
@@ -165,6 +51,123 @@ joinRoomButton.addEventListener('click', () => {
             switchToChat(authCode);
         }
     } else {
-        alert('Please enter your name, the room code, and select a profile picture. If You Select Animated avatar then just hit okkkk');
+        alert('Please enter your name, the room code, and select a profile picture.');
     }
+}
+
+// Function to handle creating a room
+function handleCreateRoom() {
+    socket.emit('create room');
+}
+
+// Function to handle sending a message
+function handleSendMessage(e) {
+    e.preventDefault();
+    const msg = input.value.trim();
+    if (msg) {
+        socket.emit('chat message', msg);
+        input.value = '';
+    }
+}
+
+// Function to toggle theme
+function toggleTheme() {
+    document.body.classList.toggle('dark-mode');
+    toggleThemeButton.textContent = document.body.classList.contains('dark-mode') ? 'Light Mode' : 'Dark Mode';
+}
+
+// Function to switch to chat view
+function switchToChat(authCode) {
+    authContainer.classList.add('hidden');
+    chatContainer.classList.remove('hidden');
+    chatRoomInfo.textContent = `Chat-Room Code: ${authCode}`; // Update chat room info with authCode
+    requestNotificationPermission();
+}
+
+// Function to request notification permission
+function requestNotificationPermission() {
+    if ('Notification' in window && Notification.permission !== 'granted') {
+        Notification.requestPermission().then(permission => {
+            if (permission !== 'granted') {
+                alert('Notification permission denied. You will not receive desktop notifications.');
+            }
+        });
+    }
+}
+
+// Function to show desktop notification
+function showNotification(message) {
+    if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('Chat App', {
+            body: message,
+            icon: 'chat-icon.png'
+        });
+    }
+}
+
+// Default profile pictures
+const defaultProfilePics = document.querySelector('.default-pics-grid');
+const defaultPics = [
+    'images/default1.gif',
+    'images/default2.gif',
+    'images/default3.gif',
+    'images/default4.gif',
+    'images/default5.gif',
+    'images/default6.gif',
+];
+
+defaultPics.forEach(pic => {
+    const img = document.createElement('img');
+    img.src = pic;
+    img.classList.add('default-pic');
+    img.addEventListener('click', () => {
+        selectedProfilePic = pic;
+        document.querySelectorAll('.default-pic').forEach(p => p.classList.remove('selected'));
+        img.classList.add('selected');
+    });
+    defaultProfilePics.appendChild(img);
 });
+
+// Socket event handlers
+socket.on('room created', handleRoomCreated);
+socket.on('chat message', handleChatMessage);
+socket.on('notification', handleNotification);
+socket.on('mention notification', handleMentionNotification);
+socket.on('room data', handleRoomData);
+
+// Function to handle room creation
+function handleRoomCreated(authCode) {
+    alert(`Room created with code: ${authCode}`);
+    authCodeInput.value = authCode;
+}
+
+// Function to handle incoming chat messages
+function handleChatMessage({ userName, profilePic, msg, color }) {
+    const item = document.createElement('div');
+    const coloredMsg = msg.replace(/@(\w+)/g, `<span style="color: ${color};">@\$1</span>`);
+    item.innerHTML = `<img src="${profilePic}" alt="${userName}" class="profile-pic"><strong>${userName}:</strong> ${coloredMsg}`;
+    messages.appendChild(item);
+    messages.scrollTop = messages.scrollHeight;
+    showNotification(`${userName}: ${msg}`);
+}
+
+// Function to handle general notifications
+function handleNotification(msg) {
+    const item = document.createElement('div');
+    item.textContent = msg;
+    item.style.fontStyle = 'italic';
+    messages.appendChild(item);
+    messages.scrollTop = messages.scrollHeight;
+    showNotification(msg);
+}
+
+// Function to handle mention notifications
+function handleMentionNotification(msg) {
+    alert(msg);
+    showNotification(msg);
+}
+
+// Function to handle room data (display chat ID)
+function handleRoomData({ authCode, users }) {
+    switchToChat(authCode);
+}
