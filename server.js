@@ -88,6 +88,28 @@ io.on('connection', (socket) => {
     });
 });
 
+// Server-side (Node.js with Socket.io)
+const users = {};
+
+io.on('connection', socket => {
+    socket.on('join room', ({ authCode, userName, profilePic }) => {
+        if (!users[authCode]) {
+            users[authCode] = [];
+        }
+        users[authCode].push({ userName, profilePic, id: socket.id });
+        socket.join(authCode);
+        io.to(authCode).emit('user list update', users[authCode]);
+    });
+
+    socket.on('disconnect', () => {
+        for (let authCode in users) {
+            users[authCode] = users[authCode].filter(user => user.id !== socket.id);
+            io.to(authCode).emit('user list update', users[authCode]);
+        }
+    });
+});
+
+
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
