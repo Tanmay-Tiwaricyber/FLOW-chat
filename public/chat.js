@@ -11,7 +11,9 @@ const messages = document.getElementById('messages');
 const authContainer = document.querySelector('.auth-container');
 const chatContainer = document.querySelector('.chat-container');
 const toggleThemeButton = document.getElementById('toggleThemeButton');
-const chatRoomInfo = document.getElementById('chatRoomInfo'); // New element reference
+const chatRoomInfo = document.getElementById('chatRoomInfo');
+const userList = document.getElementById('userList');
+const userContainer = document.querySelector('.user-container'); // New element reference
 
 joinRoomButton.addEventListener('click', handleJoinRoom);
 createRoomButton.addEventListener('click', handleCreateRoom);
@@ -80,6 +82,7 @@ function toggleTheme() {
 function switchToChat(authCode) {
     authContainer.classList.add('hidden');
     chatContainer.classList.remove('hidden');
+    userContainer.classList.remove('hidden'); // Show the user container after joining the chat
     chatRoomInfo.textContent = `Chat-Room Code: ${authCode}`; // Update chat room info with authCode
     requestNotificationPermission();
 }
@@ -128,12 +131,23 @@ defaultPics.forEach(pic => {
     defaultProfilePics.appendChild(img);
 });
 
+// Function to update user list
+function updateUserList(users) {
+    userList.innerHTML = '';
+    users.forEach(user => {
+        const userItem = document.createElement('li');
+        userItem.textContent = user.userName;
+        userList.appendChild(userItem);
+    });
+}
+
 // Socket event handlers
 socket.on('room created', handleRoomCreated);
 socket.on('chat message', handleChatMessage);
 socket.on('notification', handleNotification);
 socket.on('mention notification', handleMentionNotification);
 socket.on('room data', handleRoomData);
+socket.on('user list update', updateUserList); // New event handler
 
 // Function to handle room creation
 function handleRoomCreated(authCode) {
@@ -167,7 +181,8 @@ function handleMentionNotification(msg) {
     showNotification(msg);
 }
 
-// Function to handle room data (display chat ID)
+// Function to handle room data (display chat ID and update user list)
 function handleRoomData({ authCode, users }) {
     switchToChat(authCode);
+    updateUserList(users);
 }
