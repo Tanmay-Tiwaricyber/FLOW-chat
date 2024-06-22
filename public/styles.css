@@ -199,6 +199,59 @@ button:hover {
     color: #333;
 }
 
+.users-panel {
+    width: 200px;
+    padding: 10px;
+    border-right: 1px solid #ddd;
+    background-color: #f9f9f9;
+}
+.user-container {
+    width: 200px;
+    background-color: #f0f0f0;
+    border-right: 1px solid #ddd;
+    padding: 10px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    left: -180px; /* Hide the container by default */
+    height: 100%;
+    overflow-y: auto;
+    transition: left 0.3s ease;
+    z-index: 1000;
+}
+
+.user-container:hover {
+    left: 0; /* Show the container on hover */
+}
+
+.users-list h3 {
+    margin-top: 0;
+    font-size: 1.2em;
+}
+
+.users-list ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.users-list li {
+    padding: 5px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.users-list li:last-child {
+    border-bottom: none;
+}
+
+.chat-container {
+    flex: 1;
+    margin-left: 20px; /* Adjust margin to match the width of the hidden part of the user container */
+    padding: 20px;
+}
+
+.hidden {
+    display: none;
+}
 /* Responsive styles */
 @media (max-width: 768px) {
     .auth-container, .chat-container {
