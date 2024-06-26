@@ -1,4 +1,3 @@
-// server.js
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
@@ -30,6 +29,10 @@ const upload = multer({ storage: storage });
 
 app.post('/upload', upload.single('profilePic'), (req, res) => {
     res.json({ filePath: `uploads/${req.file.filename}` });
+});
+
+app.post('/uploadFile', upload.single('file'), (req, res) => {
+    res.json({ filePath: `uploads/${req.file.filename}`, fileName: req.file.originalname });
 });
 
 const generateAuthCode = () => {
@@ -70,6 +73,10 @@ io.on('connection', (socket) => {
             io.to(authCode).emit('chat message', { userName, profilePic, msg, color: user.color });
         });
 
+        socket.on('file message', (data) => {
+            io.to(authCode).emit('file message', { userName, profilePic, filePath: data.filePath, fileName: data.fileName, color: user.color });
+        });
+
         socket.on('disconnect', () => {
             const userIndex = rooms[authCode].findIndex(u => u.id === socket.id);
             const user = rooms[authCode][userIndex];
@@ -108,7 +115,6 @@ io.on('connection', socket => {
         }
     });
 });
-
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
