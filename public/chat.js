@@ -14,11 +14,15 @@ const toggleThemeButton = document.getElementById('toggleThemeButton');
 const chatRoomInfo = document.getElementById('chatRoomInfo');
 const userList = document.getElementById('userList');
 const userContainer = document.querySelector('.user-container'); // New element reference
+const fileInput = document.getElementById('fileInput'); // New element reference
+const fileUploadButton = document.getElementById('fileUploadButton'); // New element reference
 
 joinRoomButton.addEventListener('click', handleJoinRoom);
 createRoomButton.addEventListener('click', handleCreateRoom);
 form.addEventListener('submit', handleSendMessage);
 toggleThemeButton.addEventListener('click', toggleTheme);
+fileUploadButton.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', handleFileUpload);
 
 let selectedProfilePic = null;
 let currentUser = null;
@@ -69,6 +73,27 @@ function handleSendMessage(e) {
     if (msg) {
         socket.emit('chat message', msg);
         input.value = '';
+    }
+}
+
+// Function to handle file upload
+function handleFileUpload() {
+    const file = fileInput.files[0];
+    if (file) {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        fetch('/uploadFile', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            socket.emit('file message', { filePath: data.filePath, fileName: file.name });
+        })
+        .catch(error => {
+            console.error('Error uploading file:', error);
+        });
     }
 }
 
@@ -144,6 +169,7 @@ function updateUserList(users) {
 // Socket event handlers
 socket.on('room created', handleRoomCreated);
 socket.on('chat message', handleChatMessage);
+socket.on('file message', handleFileMessage); // New event handler for file messages
 socket.on('notification', handleNotification);
 socket.on('mention notification', handleMentionNotification);
 socket.on('room data', handleRoomData);
@@ -163,6 +189,15 @@ function handleChatMessage({ userName, profilePic, msg, color }) {
     messages.appendChild(item);
     messages.scrollTop = messages.scrollHeight;
     showNotification(`${userName}: ${msg}`);
+}
+
+// Function to handle incoming file messages
+function handleFileMessage({ userName, profilePic, filePath, fileName, color }) {
+    const item = document.createElement('div');
+    item.innerHTML = `<img src="${profilePic}" alt="${userName}" class="profile-pic"><strong>${userName}:</strong> <a href="${filePath}" download="${fileName}" style="color:${color}">${fileName}</a>`;
+    messages.appendChild(item);
+    messages.scrollTop = messages.scrollHeight;
+    showNotification(`${userName} sent a file: ${fileName}`);
 }
 
 // Function to handle general notifications
