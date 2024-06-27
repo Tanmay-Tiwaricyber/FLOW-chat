@@ -1,371 +1,383 @@
 :root {
-    --background-color: #f0f0f0;
-    --text-color: #000;
-    --button-background-color: #007bff;
-    --button-text-color: #fff;
-    --input-background-color: #fff;
-    --input-text-color: #000;
-    --message-background-color: #f1f1f1;
-    --mention-background-color: #e0f7fa;
+ --background-color: #f0f0f0;
+ --text-color: #000;
+ --button-background-color: #007bff;
+ --button-text-color: #fff;
+ --input-background-color: #fff;
+ --input-text-color: #000;
+ --message-background-color: #f1f1f1;
+ --mention-background-color: #e0f7fa;
 }
 
 body.dark-mode {
-    --background-color: #121212;
-    --text-color: #ffffff;
-    --button-background-color: #bb86fc;
-    --button-text-color: #000;
-    --input-background-color: #333;
-    --input-text-color: #fff;
-    --message-background-color: #333;
-    --mention-background-color: #455a64;
+ --background-color: #121212;
+ --text-color: #ffffff;
+ --button-background-color: #bb86fc;
+ --button-text-color: #000;
+ --input-background-color: #333;
+ --input-text-color: #fff;
+ --message-background-color: #333;
+ --mention-background-color: #455a64;
 }
 
 body {
-    font-family: Arial, sans-serif;
-    background-color: var(--background-color);
-    color: var(--text-color);
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    font-family: "Playwrite FR Moderne", cursive;
-    transition: background-color 0.3s, color 0.3s;
+ font-family: Arial, sans-serif;
+ background-color: var(--background-color);
+ color: var(--text-color);
+ margin: 0;
+ padding: 0;
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ height: 100vh;
+ font-family: "Playwrite FR Moderne", cursive;
+ transition: background-color 0.3s, color 0.3s;
 }
 
-.auth-container, .chat-container {
-    background-color: var(--input-background-color);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    width: 100%;
-    max-width: 400px;
-    overflow: hidden;
-    padding: 20px;
-    text-align: center;
+.auth-container,
+.chat-container {
+ background-color: var(--input-background-color);
+ box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+ border-radius: 8px;
+ width: 100%;
+ max-width: 400px;
+ overflow: hidden;
+ padding: 20px;
+ text-align: center;
 }
 
 .auth-container input {
-    width: calc(100% - 22px);
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: var(--input-background-color);
-    color: var(--input-text-color);
+ width: calc(100% - 22px);
+ padding: 10px;
+ margin-bottom: 10px;
+ border: 1px solid #ccc;
+ border-radius: 4px;
+ background-color: var(--input-background-color);
+ color: var(--input-text-color);
 }
 
 .auth-container button {
-    padding: 10px 20px;
-    margin: 5px;
-    border: none;
-    background-color: var(--button-background-color);
-    color: var(--button-text-color);
-    cursor: pointer;
+ padding: 10px 20px;
+ margin: 5px;
+ border: none;
+ background-color: var(--button-background-color);
+ color: var(--button-text-color);
+ cursor: pointer;
 }
 
 .auth-container button:hover {
-    background-color: #0056b3;
+ background-color: #0056b3;
 }
 
 .hidden {
-    display: none;
+ display: none;
 }
 
 .chat-container {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    max-height: 600px;
-    width: 100%;
+ display: flex;
+ flex-direction: column;
+ height: 100%;
+ max-height: 600px;
+ width: 100%;
 }
 
 .header {
-    display: flex;
-    justify-content: flex-end;
-    padding: 10px;
-    background-color: var(--input-background-color);
+ display: flex;
+ justify-content: flex-end;
+ padding: 10px;
+ background-color: var(--input-background-color);
 }
 
 .chat-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
+ flex: 1;
+ display: flex;
+ flex-direction: column;
+ overflow-y: auto;
 }
 
 .messages {
-    flex: 1;
-    padding: 10px;
-    overflow-y: auto;
-    border-bottom: 1px solid #eee;
-    background-color: var(--input-background-color);
-    text-align: left;
+ flex: 1;
+ padding: 10px;
+ overflow-y: auto;
+ border-bottom: 1px solid #eee;
+ background-color: var(--input-background-color);
+ text-align: left;
 }
 
 .messages div {
-    padding: 8px 10px;
-    margin-bottom: 10px;
-    border-radius: 4px;
-    background-color: var(--message-background-color);
-    word-break: break-word;
-    color: var(--text-color);
-    display: flex;
-    align-items: center;
+ padding: 8px 10px;
+ margin-bottom: 10px;
+ border-radius: 4px;
+ background-color: var(--message-background-color);
+ word-break: break-word;
+ color: var(--text-color);
+ display: flex;
+ align-items: center;
 }
 
 .messages .mention {
-    background-color: var(--mention-background-color);
+ background-color: var(--mention-background-color);
 }
 
 .form {
-    display: flex;
-    border-top: 1px solid #eee;
-    background-color: var(--input-background-color);
+ display: flex;
+ border-top: 1px solid #eee;
+ background-color: var(--input-background-color);
 }
 
 #input {
-    flex: 1;
-    padding: 10px;
-    border: none;
-    border-radius: 0;
-    outline: none;
-    font-size: 16px;
-    background-color: var(--input-background-color);
-    color: var(--input-text-color);
+ flex: 1;
+ padding: 10px;
+ border: none;
+ border-radius: 0;
+ outline: none;
+ font-size: 16px;
+ background-color: var(--input-background-color);
+ color: var(--input-text-color);
 }
 
 button {
-    padding: 10px 20px;
-    border: none;
-    background-color: var(--button-background-color);
-    color: var(--button-text-color);
-    cursor: pointer;
+ padding: 10px 20px;
+ border: none;
+ background-color: var(--button-background-color);
+ color: var(--button-text-color);
+ cursor: pointer;
 }
 
 button:hover {
-    background-color: #0056b3;
+ background-color: #0056b3;
 }
 
 .profile-pic {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    margin-right: 10px;
-    vertical-align: middle;
+ width: 30px;
+ height: 30px;
+ border-radius: 50%;
+ margin-right: 10px;
+ vertical-align: middle;
 }
 
 .mention {
-    color: red;
-    font-weight: bold;
+ color: red;
+ font-weight: bold;
 }
 
 .default-profile-pics {
-    margin-bottom: 10px;
+ margin-bottom: 10px;
 }
 
 .default-pics-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
+ display: flex;
+ flex-wrap: wrap;
+ gap: 10px;
+ justify-content: center;
 }
 
 .default-pic {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: transform 0.3s, border 0.3s;
-    border: 2px solid transparent;
+ width: 50px;
+ height: 50px;
+ border-radius: 50%;
+ cursor: pointer;
+ transition: transform 0.3s, border 0.3s;
+ border: 2px solid transparent;
 }
 
 .default-pic:hover {
-    transform: scale(1.1);
+ transform: scale(1.1);
 }
 
 .default-pic.selected {
-    border: 2px solid var(--button-background-color);
+ border: 2px solid var(--button-background-color);
 }
 
 .chat-room-info {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    padding: 5px 10px;
-    background-color: rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
-    font-size: 14px;
-    color: #333;
+ position: absolute;
+ top: 10px;
+ right: 10px;
+ padding: 5px 10px;
+ background-color: rgba(0, 0, 0, 0.1);
+ border-radius: 4px;
+ font-size: 14px;
+ color: #333;
 }
 
 .users-panel {
-    width: 200px;
-    padding: 10px;
-    border-right: 1px solid #ddd;
-    background-color: #f9f9f9;
+ width: 200px;
+ padding: 10px;
+ border-right: 1px solid #ddd;
+ background-color: #f9f9f9;
 }
+
 .user-container {
-    width: 200px;
-    background-color: #f0f0f0;
-    border-right: 1px solid #ddd;
-    padding: 10px;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    position: fixed;
-    top: 0;
-    left: -180px; /* Hide the container by default */
-    height: 100%;
-    overflow-y: auto;
-    transition: left 0.3s ease;
-    z-index: 1000;
+ width: 200px;
+ background-color: #f0f0f0;
+ border-right: 1px solid #ddd;
+ padding: 10px;
+ box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+ position: fixed;
+ top: 0;
+ left: -180px;
+ /* Hide the container by default */
+ height: 100%;
+ overflow-y: auto;
+ transition: left 0.3s ease;
+ z-index: 1000;
 }
 
 .user-container:hover {
-    left: 0; /* Show the container on hover */
+ left: 0;
+ /* Show the container on hover */
 }
 
 .users-list h3 {
-    margin-top: 0;
-    font-size: 1.2em;
+ margin-top: 0;
+ font-size: 1.2em;
 }
 
 .users-list ul {
-    list-style: none;
-    padding-left: 0;
+ list-style: none;
+ padding-left: 0;
 }
 
 .users-list li {
-    padding: 5px 0;
-    border-bottom: 1px solid #ddd;
+ padding: 5px 0;
+ border-bottom: 1px solid #ddd;
 }
 
 .users-list li:last-child {
-    border-bottom: none;
+ border-bottom: none;
 }
 
 .chat-container {
-    flex: 1;
-    margin-left: 20px; /* Adjust margin to match the width of the hidden part of the user container */
-    padding: 20px;
+ flex: 1;
+ margin-left: 20px;
+ /* Adjust margin to match the width of the hidden part of the user container */
+ padding: 20px;
 }
 
 .hidden {
-    display: none;
+ display: none;
 }
+
 /* File upload button styling */
+
 .file-upload {
-    position: relative;
-    overflow: hidden;
-    display: inline-block;
+ position: relative;
+ overflow: hidden;
+ display: inline-block;
 }
 
 .file-upload-btn {
-    border: 2px solid #4CAF50;
-    color: white;
-    background-color: #4CAF50;
-    padding: 10px 20px;
-    font-size: 16px;
-    font-weight: bold;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s ease;
+ border: 2px solid #4CAF50;
+ color: white;
+ background-color: #4CAF50;
+ padding: 10px 20px;
+ font-size: 16px;
+ font-weight: bold;
+ border-radius: 5px;
+ cursor: pointer;
+ transition: all 0.3s ease;
 }
 
 .file-upload-btn:hover {
-    background-color: #45a049;
-    border-color: #45a049;
+ background-color: #45a049;
+ border-color: #45a049;
 }
 
 #fileInput {
-    position: absolute;
-    top: 0;
-    left: 0;
-    font-size: 100px;
-    text-align: right;
-    opacity: 0;
-    cursor: pointer;
-    height: 100%;
-    width: 100%;
-    display: block;
+ position: absolute;
+ top: 0;
+ left: 0;
+ font-size: 100px;
+ text-align: right;
+ opacity: 0;
+ cursor: pointer;
+ height: 100%;
+ width: 100%;
+ display: block;
 }
 
 /* Responsive styles */
+
 @media (max-width: 768px) {
-    .auth-container, .chat-container {
-        max-width: 90%;
-        padding: 10px;
-    }
+ .auth-container,
+ .chat-container {
+  max-width: 90%;
+  padding: 10px;
+ }
 
-    .messages div {
-        font-size: 14px;
-    }
+ .messages div {
+  font-size: 14px;
+ }
 
-    .form #input {
-        font-size: 14px;
-        padding: 8px;
-    }
+ .form #input {
+  font-size: 14px;
+  padding: 8px;
+ }
 
-    button {
-        padding: 8px 16px;
-    }
+ button {
+  padding: 8px 16px;
+ }
 
-    .profile-pic {
-        width: 25px;
-        height: 25px;
-    }
+ .profile-pic {
+  width: 25px;
+  height: 25px;
+ }
 }
 
 @media (max-width: 480px) {
-    .auth-container, .chat-container {
-        max-width: 100%;
-        padding: 5px;
-    }
+ .auth-container,
+ .chat-container {
+  max-width: 100%;
+  padding: 5px;
+ }
 
-    .messages div {
-        font-size: 12px;
-    }
+ .messages div {
+  font-size: 12px;
+ }
 
-    .form #input {
-        font-size: 12px;
-        padding: 6px;
-    }
+ .form #input {
+  font-size: 12px;
+  padding: 6px;
+ }
 
-    button {
-        padding: 6px 12px;
-    }
+ button {
+  padding: 6px 12px;
+ }
 
-    .profile-pic {
-        width: 20px;
-        height: 20px;
-    }
+ .profile-pic {
+  width: 20px;
+  height: 20px;
+ }
 }
 
 /* Additional responsive styles for better layout */
+
 @media (min-width: 769px) {
-    .auth-container, .chat-container {
-        max-width: 500px;
-        padding: 20px;
-    }
+ .auth-container,
+ .chat-container {
+  max-width: 500px;
+  padding: 20px;
+ }
 
-    .messages {
-        padding: 15px;
-    }
+ .messages {
+  padding: 15px;
+ }
 
-    .messages div {
-        font-size: 16px;
-    }
+ .messages div {
+  font-size: 16px;
+ }
 
-    .form #input {
-        font-size: 16px;
-        padding: 10px;
-    }
+ .form #input {
+  font-size: 16px;
+  padding: 10px;
+ }
 
-    button {
-        padding: 10px 20px;
-    }
+ button {
+  padding: 10px 20px;
+ }
 
-    .profile-pic {
-        width: 35px;
-        height: 35px;
-    }
+ .profile-pic {
+  width: 35px;
+  height: 35px;
+ }
 }
