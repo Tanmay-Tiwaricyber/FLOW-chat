@@ -29,141 +29,158 @@ let currentUser = null;
 
 // Function to handle joining a room
 function handleJoinRoom() {
-    const userName = userNameInput.value.trim();
-    const authCode = authCodeInput.value.trim();
-    const profilePic = profilePicInput.files[0];
+  const userName = userNameInput.value.trim();
+  const authCode = authCodeInput.value.trim();
+  const profilePic = profilePicInput.files[0];
 
-    if (userName && authCode && (profilePic || selectedProfilePic)) {
-        if (profilePic) {
-            const formData = new FormData();
-            formData.append('profilePic', profilePic);
+  if (userName && authCode && (profilePic || selectedProfilePic)) {
+    if (profilePic) {
+      const formData = new FormData();
+      formData.append('profilePic', profilePic);
 
-            fetch('/upload', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                currentUser = { userName, profilePic: data.filePath };
-                socket.emit('join room', { authCode, userName, profilePic: data.filePath });
-                switchToChat(authCode);
-            })
-            .catch(error => {
-                console.error('Error uploading profile picture:', error);
-            });
-        } else {
-            currentUser = { userName, profilePic: selectedProfilePic };
-            socket.emit('join room', { authCode, userName, profilePic: selectedProfilePic });
-            switchToChat(authCode);
-        }
+      fetch('/upload', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          currentUser = {
+            userName,
+            profilePic: data.filePath
+          };
+          socket.emit('join room', {
+            authCode,
+            userName,
+            profilePic: data.filePath
+          });
+          switchToChat(authCode);
+        })
+        .catch(error => {
+          console.error('Error uploading profile picture:', error);
+        });
     } else {
-        alert('Please enter your name, the room code, and select a profile picture.');
+      currentUser = {
+        userName,
+        profilePic: selectedProfilePic
+      };
+      socket.emit('join room', {
+        authCode,
+        userName,
+        profilePic: selectedProfilePic
+      });
+      switchToChat(authCode);
     }
+  } else {
+    alert('Please enter your name, the room code, and select a profile picture.');
+  }
 }
 
 // Function to handle creating a room
 function handleCreateRoom() {
-    socket.emit('create room');
+  socket.emit('create room');
 }
 
 // Function to handle sending a message
 function handleSendMessage(e) {
-    e.preventDefault();
-    const msg = input.value.trim();
-    if (msg) {
-        socket.emit('chat message', msg);
-        input.value = '';
-    }
+  e.preventDefault();
+  const msg = input.value.trim();
+  if (msg) {
+    socket.emit('chat message', msg);
+    input.value = '';
+  }
 }
 
 // Function to handle file upload
 function handleFileUpload() {
-    const file = fileInput.files[0];
-    if (file) {
-        const formData = new FormData();
-        formData.append('file', file);
+  const file = fileInput.files[0];
+  if (file) {
+    const formData = new FormData();
+    formData.append('file', file);
 
-        fetch('/uploadFile', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            socket.emit('file message', { filePath: data.filePath, fileName: file.name });
-        })
-        .catch(error => {
-            console.error('Error uploading file:', error);
+    fetch('/uploadFile', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        socket.emit('file message', {
+          filePath: data.filePath,
+          fileName: file.name
         });
-    }
+      })
+      .catch(error => {
+        console.error('Error uploading file:', error);
+      });
+  }
 }
 
 // Function to toggle theme
 function toggleTheme() {
-    document.body.classList.toggle('dark-mode');
-    toggleThemeButton.textContent = document.body.classList.contains('dark-mode') ? 'Light Mode' : 'Dark Mode';
+  document.body.classList.toggle('dark-mode');
+  toggleThemeButton.textContent = document.body.classList.contains('dark-mode') ? 'Light Mode' : 'Dark Mode';
 }
 
 // Function to switch to chat view
 function switchToChat(authCode) {
-    authContainer.classList.add('hidden');
-    chatContainer.classList.remove('hidden');
-    userContainer.classList.remove('hidden'); // Show the user container after joining the chat
-    chatRoomInfo.textContent = `Chat-Room Code: ${authCode}`; // Update chat room info with authCode
-    requestNotificationPermission();
+  authContainer.classList.add('hidden');
+  chatContainer.classList.remove('hidden');
+  userContainer.classList.remove('hidden'); // Show the user container after joining the chat
+  chatRoomInfo.textContent = `Chat-Room Code: ${authCode}`; // Update chat room info with authCode
+  requestNotificationPermission();
 }
 
 // Function to request notification permission
 function requestNotificationPermission() {
-    if ('Notification' in window && Notification.permission !== 'granted') {
-        Notification.requestPermission().then(permission => {
-            if (permission !== 'granted') {
-                alert('Notification permission denied. You will not receive desktop notifications.');
-            }
-        });
-    }
+  if ('Notification' in window && Notification.permission !== 'granted') {
+    Notification.requestPermission().then(permission => {
+      if (permission !== 'granted') {
+        alert('Notification permission denied. You will not receive desktop notifications.');
+      }
+    });
+  }
 }
 
 // Function to show desktop notification
 function showNotification(message) {
-    if ('Notification' in window && Notification.permission === 'granted') {
-        new Notification('Chat App', {
-            body: message,
-            icon: 'chat-icon.png'
-        });
-    }
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification('Chat App', {
+      body: message,
+      icon: 'chat-icon.png'
+    });
+  }
 }
 
 // Default profile pictures
 const defaultProfilePics = document.querySelector('.default-pics-grid');
 const defaultPics = [
-    'images/default1.gif',
-    'images/default2.gif',
-    'images/default3.gif',
-    'images/default4.gif',
-    'images/default5.gif',
-    'images/default6.gif',
+  'images/default1.gif',
+  'images/default2.gif',
+  'images/default3.gif',
+  'images/default4.gif',
+  'images/default5.gif',
+  'images/default6.gif',
 ];
 
 defaultPics.forEach(pic => {
-    const img = document.createElement('img');
-    img.src = pic;
-    img.classList.add('default-pic');
-    img.addEventListener('click', () => {
-        selectedProfilePic = pic;
-        document.querySelectorAll('.default-pic').forEach(p => p.classList.remove('selected'));
-        img.classList.add('selected');
-    });
-    defaultProfilePics.appendChild(img);
+  const img = document.createElement('img');
+  img.src = pic;
+  img.classList.add('default-pic');
+  img.addEventListener('click', () => {
+    selectedProfilePic = pic;
+    document.querySelectorAll('.default-pic').forEach(p => p.classList.remove('selected'));
+    img.classList.add('selected');
+  });
+  defaultProfilePics.appendChild(img);
 });
 
 // Function to update user list
 function updateUserList(users) {
-    userList.innerHTML = '';
-    users.forEach(user => {
-        const userItem = document.createElement('li');
-        userItem.textContent = user.userName;
-        userList.appendChild(userItem);
-    });
+  userList.innerHTML = '';
+  users.forEach(user => {
+    const userItem = document.createElement('li');
+    userItem.textContent = user.userName;
+    userList.appendChild(userItem);
+  });
 }
 
 // Socket event handlers
@@ -177,47 +194,61 @@ socket.on('user list update', updateUserList); // New event handler
 
 // Function to handle room creation
 function handleRoomCreated(authCode) {
-    alert(`Room created with code: ${authCode}`);
-    authCodeInput.value = authCode;
+  alert(`Room created with code: ${authCode}`);
+  authCodeInput.value = authCode;
 }
 
 // Function to handle incoming chat messages
-function handleChatMessage({ userName, profilePic, msg, color }) {
-    const item = document.createElement('div');
-    const coloredMsg = msg.replace(/@(\w+)/g, `<span style="color: ${color};">@\$1</span>`);
-    item.innerHTML = `<img src="${profilePic}" alt="${userName}" class="profile-pic"><strong>${userName}:</strong> ${coloredMsg}`;
-    messages.appendChild(item);
-    messages.scrollTop = messages.scrollHeight;
-    showNotification(`${userName}: ${msg}`);
+function handleChatMessage({
+  userName,
+  profilePic,
+  msg,
+  color
+}) {
+  const item = document.createElement('div');
+  const coloredMsg = msg.replace(/@(\w+)/g, `<span style="color: ${color};">@\$1</span>`);
+  item.innerHTML = `<img src="${profilePic}" alt="${userName}" class="profile-pic"><strong>${userName}:</strong> ${coloredMsg}`;
+  messages.appendChild(item);
+  messages.scrollTop = messages.scrollHeight;
+  showNotification(`${userName}: ${msg}`);
 }
 
 // Function to handle incoming file messages
-function handleFileMessage({ userName, profilePic, filePath, fileName, color }) {
-    const item = document.createElement('div');
-    item.innerHTML = `<img src="${profilePic}" alt="${userName}" class="profile-pic"><strong>${userName}:</strong> <a href="${filePath}" download="${fileName}" style="color:${color}">${fileName}</a>`;
-    messages.appendChild(item);
-    messages.scrollTop = messages.scrollHeight;
-    showNotification(`${userName} sent a file: ${fileName}`);
+function handleFileMessage({
+  userName,
+  profilePic,
+  filePath,
+  fileName,
+  color
+}) {
+  const item = document.createElement('div');
+  item.innerHTML = `<img src="${profilePic}" alt="${userName}" class="profile-pic"><strong>${userName}:</strong> <a href="${filePath}" download="${fileName}" style="color:${color}">${fileName}</a>`;
+  messages.appendChild(item);
+  messages.scrollTop = messages.scrollHeight;
+  showNotification(`${userName} sent a file: ${fileName}`);
 }
 
 // Function to handle general notifications
 function handleNotification(msg) {
-    const item = document.createElement('div');
-    item.textContent = msg;
-    item.style.fontStyle = 'italic';
-    messages.appendChild(item);
-    messages.scrollTop = messages.scrollHeight;
-    showNotification(msg);
+  const item = document.createElement('div');
+  item.textContent = msg;
+  item.style.fontStyle = 'italic';
+  messages.appendChild(item);
+  messages.scrollTop = messages.scrollHeight;
+  showNotification(msg);
 }
 
 // Function to handle mention notifications
 function handleMentionNotification(msg) {
-    alert(msg);
-    showNotification(msg);
+  alert(msg);
+  showNotification(msg);
 }
 
 // Function to handle room data (display chat ID and update user list)
-function handleRoomData({ authCode, users }) {
-    switchToChat(authCode);
-    updateUserList(users);
+function handleRoomData({
+  authCode,
+  users
+}) {
+  switchToChat(authCode);
+  updateUserList(users);
 }
