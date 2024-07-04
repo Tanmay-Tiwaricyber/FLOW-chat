@@ -26,6 +26,7 @@ fileInput.addEventListener('change', handleFileUpload);
 
 let selectedProfilePic = null;
 let currentUser = null;
+let selectedUserForChat = null; // Variable to store the selected user for one-to-one chat
 
 // Function to handle joining a room
 function handleJoinRoom() {
@@ -81,11 +82,27 @@ function handleCreateRoom() {
 }
 
 // Function to handle sending a message
+// Function to handle sending a message
 function handleSendMessage(e) {
   e.preventDefault();
   const msg = input.value.trim();
   if (msg) {
-    socket.emit('chat message', msg);
+    if (msg.includes('@group')) {
+      socket.emit('group message', {
+        msg,
+        from: currentUser.userName,
+        profilePic: currentUser.profilePic
+      });
+    } else if (selectedUserForChat) {
+      socket.emit('chat message', {
+        to: selectedUserForChat.userName,
+        msg,
+        from: currentUser.userName,
+        profilePic: currentUser.profilePic
+      });
+    } else {
+      alert('Please select a user to chat with or use @group to send a message to all.');
+    }
     input.value = '';
   }
 }
@@ -93,7 +110,7 @@ function handleSendMessage(e) {
 // Function to handle file upload
 function handleFileUpload() {
   const file = fileInput.files[0];
-  if (file) {
+  if (file && selectedUserForChat) {
     const formData = new FormData();
     formData.append('file', file);
 
@@ -104,13 +121,18 @@ function handleFileUpload() {
       .then(response => response.json())
       .then(data => {
         socket.emit('file message', {
+          to: selectedUserForChat.userName,
           filePath: data.filePath,
-          fileName: file.name
+          fileName: file.name,
+          from: currentUser.userName,
+          profilePic: currentUser.profilePic
         });
       })
       .catch(error => {
         console.error('Error uploading file:', error);
       });
+  } else if (!selectedUserForChat) {
+    alert('Please select a user to chat with.');
   }
 }
 
@@ -179,6 +201,10 @@ function updateUserList(users) {
   users.forEach(user => {
     const userItem = document.createElement('li');
     userItem.textContent = user.userName;
+    userItem.addEventListener('click', () => {
+      selectedUserForChat = user;
+      alert(`You are now chatting with ${user.userName}`);
+    });
     userList.appendChild(userItem);
   });
 }
@@ -200,32 +226,32 @@ function handleRoomCreated(authCode) {
 
 // Function to handle incoming chat messages
 function handleChatMessage({
-  userName,
+  from,
   profilePic,
   msg,
   color
 }) {
   const item = document.createElement('div');
   const coloredMsg = msg.replace(/@(\w+)/g, `<span style="color: ${color};">@\$1</span>`);
-  item.innerHTML = `<img src="${profilePic}" alt="${userName}" class="profile-pic"><strong>${userName}:</strong> ${coloredMsg}`;
+  item.innerHTML = `<img src="${profilePic}" alt="${from}" class="profile-pic"><strong>${from}:</strong> ${coloredMsg}`;
   messages.appendChild(item);
   messages.scrollTop = messages.scrollHeight;
-  showNotification(`${userName}: ${msg}`);
+  showNotification(`${from}: ${msg}`);
 }
 
 // Function to handle incoming file messages
 function handleFileMessage({
-  userName,
+  from,
   profilePic,
   filePath,
   fileName,
   color
 }) {
   const item = document.createElement('div');
-  item.innerHTML = `<img src="${profilePic}" alt="${userName}" class="profile-pic"><strong>${userName}:</strong> <a href="${filePath}" download="${fileName}" style="color:${color}">${fileName}</a>`;
+  item.innerHTML = `<img src="${profilePic}" alt="${from}" class="profile-pic"><strong>${from}:</strong> <a href="${filePath}" download="${fileName}" style="color:${color}">${fileName}</a>`;
   messages.appendChild(item);
   messages.scrollTop = messages.scrollHeight;
-  showNotification(`${userName} sent a file: ${fileName}`);
+  showNotification(`${from} sent a file: ${fileName}`);
 }
 
 // Function to handle general notifications
@@ -252,3 +278,4 @@ function handleRoomData({
   switchToChat(authCode);
   updateUserList(users);
 }
+
