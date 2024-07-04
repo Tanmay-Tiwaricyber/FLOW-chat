@@ -279,3 +279,7 @@ function handleRoomData({
   updateUserList(users);
 }
 
+function redirectToWebsite() {
+  window.location.href = 'https://temp-about.netlify.app/'; // Replace with the URL you want to redirect to
+}
+
