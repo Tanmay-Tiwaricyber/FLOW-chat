@@ -61,20 +61,26 @@ io.on('connection', (socket) => {
 
         socket.join(authCode);
         socket.to(authCode).emit('notification', `${userName} has joined room ${authCode}`);
+        io.to(authCode).emit('user list update', rooms[authCode]);
 
-        socket.on('chat message', (msg) => {
-            const roomUsers = rooms[authCode];
-            const mentionedUser = roomUsers.find(user => msg.includes(`@${user.userName}`));
-
-            if (mentionedUser) {
-                io.to(mentionedUser.id).emit('mention notification', `${userName} mentioned you in room ${authCode}`);
+        socket.on('chat message', (data) => {
+            const recipient = rooms[authCode].find(user => user.userName === data.to);
+            if (recipient) {
+                io.to(recipient.id).emit('chat message', data);
+                io.to(socket.id).emit('chat message', data); // To show the message on sender's side as well
             }
-
-            io.to(authCode).emit('chat message', { userName, profilePic, msg, color: user.color });
         });
 
         socket.on('file message', (data) => {
-            io.to(authCode).emit('file message', { userName, profilePic, filePath: data.filePath, fileName: data.fileName, color: user.color });
+            const recipient = rooms[authCode].find(user => user.userName === data.to);
+            if (recipient) {
+                io.to(recipient.id).emit('file message', data);
+                io.to(socket.id).emit('file message', data); // To show the message on sender's side as well
+            }
+        });
+
+        socket.on('group message', (data) => {
+            io.to(authCode).emit('chat message', data);
         });
 
         socket.on('disconnect', () => {
@@ -85,6 +91,7 @@ io.on('connection', (socket) => {
                 delete rooms[authCode];
             } else {
                 socket.to(authCode).emit('notification', `${user.userName} has left room ${authCode}`);
+                io.to(authCode).emit('user list update', rooms[authCode]);
             }
         });
     });
@@ -92,27 +99,6 @@ io.on('connection', (socket) => {
     socket.on('create room', () => {
         const authCode = generateAuthCode();
         socket.emit('room created', authCode);
-    });
-});
-
-// Server-side (Node.js with Socket.io)
-const users = {};
-
-io.on('connection', socket => {
-    socket.on('join room', ({ authCode, userName, profilePic }) => {
-        if (!users[authCode]) {
-            users[authCode] = [];
-        }
-        users[authCode].push({ userName, profilePic, id: socket.id });
-        socket.join(authCode);
-        io.to(authCode).emit('user list update', users[authCode]);
-    });
-
-    socket.on('disconnect', () => {
-        for (let authCode in users) {
-            users[authCode] = users[authCode].filter(user => user.id !== socket.id);
-            io.to(authCode).emit('user list update', users[authCode]);
-        }
     });
 });
 
