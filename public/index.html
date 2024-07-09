@@ -8,10 +8,9 @@
     <link rel="stylesheet" href="/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playwrite+ES:wght@100..400&family=Playwrite+FR+Moderne:wght@100..400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<body>
-    <!-- New user container -->
+<body background="chat-background.png">
     <div class="user-container hidden">
         <div class="users-list">
             <h3>Active Users</h3>
@@ -19,37 +18,48 @@
         </div>
     </div>
     <div class="auth-container">
-        <input type="text" id="userNameInput" placeholder="Enter your name" style="font-family: Playwrite FR Moderne">
-        <input type="text" id="authCodeInput" placeholder="Enter room code" style="font-family: Playwrite FR Moderne">
-        <input type="file" id="profilePicInput" accept="images/*" style="font-family: Playwrite FR Moderne">
+        <center><img src="chat-icon.png" alt="" srcset="" height="80px"></center>
+        <input type="text" id="userNameInput" placeholder="Enter your name">
+        <input type="text" id="authCodeInput" placeholder="Enter room code">
+        <input type="file" id="profilePicInput" accept="images/*">
         <div id="defaultProfilePics" class="default-profile-pics">
             <p>Select an Animated Profile Avatar</p>
             <div class="default-pics-grid"></div>
         </div>
-        <button id="joinRoomButton" style="font-family: Playwrite FR Moderne">Join Room</button>
-        <button id="createRoomButton" style="font-family: Playwrite FR Moderne">Create Room</button>
+        <button id="joinRoomButton">Join Room</button>
+        <button id="createRoomButton">Create Room</button>
     </div>
     <div class="chat-container hidden">
         <div class="header">
             <div id="chatRoomInfo" class="chat-room-info"></div>
-            <button id="toggleThemeButton" style="font-family: Playwrite FR Moderne">Dark Mode</button>
+            <button id="toggleThemeButton">Dark Mode</button>
         </div>
         <div class="chat-content">
             <div id="messages" class="messages"></div>
         </div>
         <form id="form" class="form">
-            <input id="input" autocomplete="off">
-            <button style="font-family: Playwrite FR Moderne">Send</button>
-        </form>
-        <div class="file-upload">
-            <button class="file-upload-btn" id="fileUploadButton" style="font-family: Playwrite FR Moderne">Upload File</button>
+            <input id="input" autocomplete="off" placeholder="Type a message...">
+            <button type="button" id="fileUploadButton" class="icon-button">
+                <img src="upload-icon.png" height="20px" alt="Upload" class="icon-image">
+            </button>
             <input type="file" id="fileInput" class="hidden">
-        </div>
+            <button type="button" id="gifButton" class="icon-button">
+                <img src="gif.png" height="20px" alt="GIF" class="icon-image">
+            </button>
+            <button type="submit" class="icon-button">
+                <img src="send-icon.png" height="20px" alt="Send" class="icon-image">
+            </button>
+        </form>
+        <div id="gifSearchContainer" class="hidden">
+            <input type="text" id="gifSearchInput" placeholder="Search for GIFs or Stickers">
+            <div id="gifResults" class="gif-results"></div>
+        </div>        
     </div>
     <div id="infoBubble" class="info-bubble" onclick="redirectToWebsite()">
         <img src="info.png" height="400px" alt="Info" class="info-icon">
     </div>
     <script src="/socket.io/socket.io.js"></script>
     <script src="chat.js"></script>
+    <script src="gif.js"></script>
 </body>
 </html>
