@@ -129,7 +129,9 @@ button {
   word-break: break-word;
   color: var(--text-color);
   display: flex;
-  align-items: center;
+  align-items: stretch;
+  justify-content: space-evenly;
+  flex-direction: column;
 }
 
 .messages .mention {
