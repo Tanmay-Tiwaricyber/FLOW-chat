@@ -23,7 +23,7 @@ body.dark-mode {
 
 body {
   font-family: 'Orbitron', sans-serif;
-  background-color: var(--background-color);
+  background-color: #7d7ddf;
   color: var(--text-color);
   margin: 0;
   padding: 0;
@@ -51,7 +51,7 @@ body {
   width: calc(100% - 22px);
   padding: 10px;
   margin-bottom: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid #28bda0;
   border-radius: 4px;
   background-color: var(--input-background-color);
   color: var(--input-text-color);
@@ -197,7 +197,7 @@ button {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  justify-content: center;
+  justify-content: space-between;
 }
 
 .default-pic {
@@ -222,7 +222,7 @@ button {
   background-color: rgba(0, 0, 0, 0.1);
   border-radius: 4px;
   font-size: 14px;
-  color: #333;
+  color: #ff8686;
 }
 
 .users-panel {
