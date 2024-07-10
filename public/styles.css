@@ -201,8 +201,8 @@ button {
 }
 
 .default-pic {
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   cursor: pointer;
   transition: transform 0.3s, border 0.3s;
@@ -458,47 +458,4 @@ button {
   .icon-button {
     display: flex;
   }
-}
-
-.status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: transparent;
-  border: 2px solid #fff; /* Initial color (transparent dot) */
-  display: inline-block;
-  margin-left: 5px;
-  vertical-align: middle;
-}
-
-.status-dot.active {
-  background-color: red; /* Red dot when user is active */
-}
-
-
-.reply-container {
-  display: flex;
-  align-items: center;
-  background-color: #f1f1f1;
-  padding: 10px;
-  border-radius: 5px;
-  margin-bottom: 10px;
-}
-
-.reply-container.hidden {
-  display: none;
-}
-
-.replying-to {
-  flex: 1;
-  font-size: 14px;
-  color: #555;
-}
-
-.cancel-reply-button {
-  background: none;
-  border: none;
-  color: #007bff;
-  cursor: pointer;
-  font-size: 14px;
 }
