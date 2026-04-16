@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FLOW — Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #080c10;
+    --surface: #0d1117;
+    --surface2: #161b22;
+    --border: #1e2732;
+    --accent: #00e5ff;
+    --accent2: #ff4bac;
+    --accent3: #39ff14;
+    --text: #cdd9e5;
+    --muted: #576070;
+    --danger: #ff3b5c;
+    --warn: #ffb547;
+    --glow: 0 0 20px rgba(0,229,255,0.15);
+    --glow-strong: 0 0 40px rgba(0,229,255,0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── GRID BACKGROUND ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── LOGIN SCREEN ── */
+  #login-screen {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    background: var(--bg);
+  }
+
+  .login-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--accent);
+    padding: 48px;
+    width: 400px;
+    position: relative;
+    animation: slideUp 0.4s ease;
+  }
+
+  .login-box::before {
+    content: '';
+    position: absolute;
+    top: -2px; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    animation: scanline 2s linear infinite;
+  }
+
+  @keyframes scanline {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.5; }
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .login-logo {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .login-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 32px;
+  }
+
+  .login-title span { color: var(--accent); }
+
+  .field-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .field-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 24px;
+  }
+
+  .field-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0,229,255,0.08);
+  }
+
+  .btn-primary {
+    width: 100%;
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    padding: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-primary:hover {
+    background: #fff;
+    box-shadow: var(--glow-strong);
+  }
+
+  .login-error {
+    color: var(--danger);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    margin-top: 12px;
+    display: none;
+  }
+
+  /* ── MAIN APP ── */
+  #app { display: none; position: relative; z-index: 1; }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  .topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .brand-icon {
+    width: 32px; height: 32px;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--bg);
+  }
+
+  .brand-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 2px;
+    color: var(--accent);
+  }
+
+  .brand-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    border: 1px solid var(--border);
+    padding: 2px 8px;
+  }
+
+  .topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .btn-refresh {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 7px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+  }
+
+  .btn-refresh:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent3);
+    box-shadow: 0 0 8px var(--accent3);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ── LAYOUT ── */
+  .layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: calc(100vh - 60px);
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 24px 0;
+    overflow-y: auto;
+    position: sticky;
+    top: 60px;
+    height: calc(100vh - 60px);
+  }
+
+  .sidebar-section {
+    padding: 0 16px;
+    margin-bottom: 8px;
+  }
+
+  .sidebar-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 0 8px;
+    margin-bottom: 8px;
+  }
+
+  .room-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px solid transparent;
+    margin-bottom: 2px;
+  }
+
+  .room-item:hover {
+    background: var(--surface2);
+    border-color: var(--border);
+  }
+
+  .room-item.active {
+    background: rgba(0,229,255,0.07);
+    border-color: var(--accent);
+  }
+
+  .room-item-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .room-hash {
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .room-info { flex: 1; min-width: 0; }
+
+  .room-name {
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--text);
+  }
+
+  .room-creator {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 1px;
+  }
+
+  .room-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    background: rgba(0,229,255,0.1);
+    color: var(--accent);
+    padding: 2px 6px;
+    flex-shrink: 0;
+  }
+
+  .room-badge.active {
+    background: rgba(57,255,20,0.1);
+    color: var(--accent3);
+  }
+
+  /* ── MAIN CONTENT ── */
+  .main { padding: 32px; overflow-y: auto; }
+
+  /* ── STATS GRID ── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .stat-card:hover { border-color: var(--accent); }
+
+  .stat-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+  }
+
+  .stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .stat-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .stat-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* ── SECTION HEADER ── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .section-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  /* ── CHAT VIEW ── */
+  .chat-header {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .chat-room-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .chat-meta {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .btn-danger {
+    background: none;
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    padding: 6px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+  }
+
+  .btn-danger:hover {
+    background: var(--danger);
+    color: #fff;
+  }
+
+  .btn-warn {
+    background: none;
+    border: 1px solid var(--warn);
+    color: var(--warn);
+    padding: 6px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+    margin-right: 8px;
+  }
+
+  .btn-warn:hover {
+    background: var(--warn);
+    color: var(--bg);
+  }
+
+  .chat-log {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    height: calc(100vh - 320px);
+    min-height: 400px;
+    overflow-y: auto;
+    padding: 16px;
+  }
+
+  .chat-log::-webkit-scrollbar { width: 4px; }
+  .chat-log::-webkit-scrollbar-track { background: transparent; }
+  .chat-log::-webkit-scrollbar-thumb { background: var(--border); }
+
+  .msg {
+    display: flex;
+    gap: 12px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(30,39,50,0.5);
+    animation: fadeIn 0.2s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateX(-4px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .msg-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    white-space: nowrap;
+    padding-top: 3px;
+    min-width: 80px;
+  }
+
+  .msg-user {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    min-width: 110px;
+    padding-top: 2px;
+  }
+
+  .msg-user.system { color: var(--muted); font-style: italic; }
+  .msg-user.chat { color: var(--accent2); }
+  .msg-user.file { color: var(--warn); }
+
+  .msg-text {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.5;
+    flex: 1;
+    word-break: break-word;
+  }
+
+  .msg.system-msg .msg-text { color: var(--muted); font-style: italic; }
+  .msg.file-msg .msg-text { color: var(--warn); }
+
+  /* ── PLACEHOLDER ── */
+  .placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 400px;
+    color: var(--muted);
+    text-align: center;
+    gap: 12px;
+  }
+
+  .placeholder-icon {
+    font-size: 48px;
+    opacity: 0.3;
+  }
+
+  .placeholder-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 1px;
+  }
+
+  /* ── ROOMS TABLE ── */
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th {
+    background: var(--surface2);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  td {
+    padding: 12px 16px;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(30,39,50,0.5);
+    vertical-align: middle;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  tr:hover td { background: rgba(0,229,255,0.03); }
+
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 2px;
+    display: inline-block;
+  }
+
+  .tag-active { background: rgba(57,255,20,0.1); color: var(--accent3); }
+  .tag-empty { background: rgba(255,59,92,0.1); color: var(--danger); }
+
+  .link-btn {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0;
+  }
+
+  .link-btn:hover { color: #fff; }
+
+  /* ── LOADING ── */
+  .loading {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    padding: 20px;
+    text-align: center;
+  }
+
+  .loading::after {
+    content: '...';
+    animation: dots 1.5s infinite;
+  }
+
+  @keyframes dots {
+    0% { content: '.'; }
+    33% { content: '..'; }
+    66% { content: '...'; }
+  }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--surface2);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 12px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    z-index: 999;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .toast.error {
+    border-color: var(--danger);
+    color: var(--danger);
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+  .empty-state {
+    padding: 48px;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">FLOW CHAT</div>
+    <div class="login-title">Admin <span>Access</span></div>
+    <label class="field-label">Password</label>
+    <input type="password" class="field-input" id="pwd-input" placeholder="Enter admin password" onkeydown="if(event.key==='Enter') login()" />
+    <button class="btn-primary" onclick="login()">AUTHENTICATE →</button>
+    <div class="login-error" id="login-error">⚠ Invalid password</div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="brand-icon">F</div>
+      <div class="brand-name">FLOW</div>
+      <div class="brand-tag">ADMIN</div>
+    </div>
+    <div class="topbar-actions">
+      <span class="status-dot"></span>
+      <span style="font-family:monospace;font-size:12px;color:var(--muted)" id="last-refresh">–</span>
+      <button class="btn-refresh" onclick="refreshAll()">↻ REFRESH</button>
+    </div>
+  </div>
+
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Rooms</div>
+        <div id="sidebar-rooms"><div class="loading">Loading</div></div>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+      <!-- STATS -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Rooms</div>
+          <div class="stat-value" id="s-rooms">–</div>
+          <div class="stat-sub">all time</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Active Rooms</div>
+          <div class="stat-value" id="s-active">–</div>
+          <div class="stat-sub">with users</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Messages</div>
+          <div class="stat-value" id="s-msgs">–</div>
+          <div class="stat-sub">all rooms</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Active Users</div>
+          <div class="stat-value" id="s-users">–</div>
+          <div class="stat-sub">connected now</div>
+        </div>
+      </div>
+
+      <!-- ROOMS TABLE -->
+      <div id="rooms-section">
+        <div class="section-header">
+          <div class="section-title">// Room Overview</div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Room ID</th>
+                <th>Created By</th>
+                <th>Created At</th>
+                <th>Users Now</th>
+                <th>Messages</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="rooms-tbody"><tr><td colspan="7" class="empty-state">Loading rooms...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- CHAT VIEW -->
+      <div id="chat-section" style="margin-top:32px; display:none">
+        <div class="section-header">
+          <div class="section-title">// Chat Log</div>
+        </div>
+        <div class="chat-header">
+          <div>
+            <div class="chat-room-name" id="chat-room-title">#room</div>
+            <div class="chat-meta" id="chat-room-meta">–</div>
+          </div>
+          <div>
+            <button class="btn-warn" onclick="kickRoom()">⚡ KICK ALL</button>
+            <button class="btn-danger" onclick="clearHistory()">🗑 CLEAR HISTORY</button>
+          </div>
+        </div>
+        <div class="chat-log" id="chat-log">
+          <div class="placeholder">
+            <div class="placeholder-icon">💬</div>
+            <div class="placeholder-text">SELECT A ROOM TO VIEW MESSAGES</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+let TOKEN = '';
+let currentRoom = null;
+let allRooms = [];
+
+// ── AUTH ────────────────────────────────────────────────────────────────────
+async function login() {
+  const pwd = document.getElementById('pwd-input').value;
+  try {
+    const res = await fetch('/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pwd })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      TOKEN = data.token;
+      sessionStorage.setItem('flow-admin-token', TOKEN);
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      refreshAll();
+      setInterval(refreshStats, 15000);
+    } else {
+      const err = document.getElementById('login-error');
+      err.style.display = 'block';
+      setTimeout(() => err.style.display = 'none', 3000);
+    }
+  } catch(e) {
+    showToast('Connection error', true);
+  }
+}
+
+// Check stored token
+window.onload = () => {
+  const stored = sessionStorage.getItem('flow-admin-token');
+  if (stored) {
+    TOKEN = stored;
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    refreshAll();
+    setInterval(refreshStats, 15000);
+  }
+};
+
+// ── API HELPERS ──────────────────────────────────────────────────────────────
+async function api(path, options = {}) {
+  const res = await fetch(path, {
+    ...options,
+    headers: { 'x-admin-token': TOKEN, 'Content-Type': 'application/json', ...(options.headers || {}) }
+  });
+  if (res.status === 401) {
+    TOKEN = '';
+    sessionStorage.removeItem('flow-admin-token');
+    location.reload();
+  }
+  return res.json();
+}
+
+// ── REFRESH ──────────────────────────────────────────────────────────────────
+async function refreshAll() {
+  await Promise.all([refreshStats(), loadRooms()]);
+  document.getElementById('last-refresh').textContent =
+    new Date().toLocaleTimeString();
+}
+
+async function refreshStats() {
+  try {
+    const s = await api('/admin/stats');
+    document.getElementById('s-rooms').textContent = s.totalRooms ?? '0';
+    document.getElementById('s-active').textContent = s.activeRooms ?? '0';
+    document.getElementById('s-msgs').textContent = s.totalMessages ?? '0';
+    document.getElementById('s-users').textContent = s.activeUsers ?? '0';
+  } catch(e) { console.error(e); }
+}
+
+async function loadRooms() {
+  try {
+    allRooms = await api('/admin/rooms');
+    renderSidebar(allRooms);
+    renderTable(allRooms);
+  } catch(e) { console.error(e); }
+}
+
+// ── RENDER SIDEBAR ────────────────────────────────────────────────────────────
+function renderSidebar(rooms) {
+  const el = document.getElementById('sidebar-rooms');
+  if (!rooms.length) {
+    el.innerHTML = '<div style="padding:16px;font-size:12px;color:var(--muted);font-family:monospace">No rooms yet</div>';
+    return;
+  }
+  el.innerHTML = rooms.map(r => `
+    <div class="room-item ${currentRoom === r.id ? 'active' : ''}" onclick="viewRoom('${r.id}')">
+      <div class="room-item-left">
+        <span class="room-hash">#</span>
+        <div class="room-info">
+          <div class="room-name">${escHtml(r.id)}</div>
+          <div class="room-creator">by ${escHtml(r.createdBy)}</div>
+        </div>
+      </div>
+      <span class="room-badge ${r.activeUsers > 0 ? 'active' : ''}">${r.activeUsers > 0 ? r.activeUsers + ' 🟢' : r.messageCount}</span>
+    </div>
+  `).join('');
+}
+
+// ── RENDER TABLE ──────────────────────────────────────────────────────────────
+function renderTable(rooms) {
+  const tbody = document.getElementById('rooms-tbody');
+  if (!rooms.length) {
+    tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No rooms have been created yet.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = rooms.map(r => `
+    <tr>
+      <td><span style="font-family:monospace;color:var(--accent)">#${escHtml(r.id)}</span></td>
+      <td><span style="font-family:monospace;color:var(--accent2)">${escHtml(r.createdBy)}</span></td>
+      <td style="font-family:monospace;font-size:11px;color:var(--muted)">${formatTime(r.createdAt)}</td>
+      <td style="font-family:monospace">${r.activeUsers}</td>
+      <td style="font-family:monospace">${r.messageCount}</td>
+      <td><span class="tag ${r.activeUsers > 0 ? 'tag-active' : 'tag-empty'}">${r.activeUsers > 0 ? 'LIVE' : 'EMPTY'}</span></td>
+      <td><button class="link-btn" onclick="viewRoom('${r.id}')">View Chats →</button></td>
+    </tr>
+  `).join('');
+}
+
+// ── VIEW ROOM MESSAGES ────────────────────────────────────────────────────────
+async function viewRoom(roomId) {
+  currentRoom = roomId;
+  renderSidebar(allRooms);
+
+  // Show chat section
+  document.getElementById('chat-section').style.display = 'block';
+  document.getElementById('chat-log').innerHTML = '<div class="loading">Loading messages</div>';
+
+  try {
+    const data = await api(`/admin/rooms/${encodeURIComponent(roomId)}/messages`);
+    const room = data.room;
+    const msgs = data.messages || [];
+
+    document.getElementById('chat-room-title').textContent = `#${roomId}`;
+    document.getElementById('chat-room-meta').textContent =
+      room ? `Created by ${room.createdBy} · ${formatTime(room.createdAt)} · ${msgs.length} messages` : `${msgs.length} messages`;
+
+    if (!msgs.length) {
+      document.getElementById('chat-log').innerHTML = `
+        <div class="placeholder">
+          <div class="placeholder-icon">💬</div>
+          <div class="placeholder-text">NO MESSAGES IN THIS ROOM</div>
+        </div>`;
+      return;
+    }
+
+    document.getElementById('chat-log').innerHTML = msgs.map(m => `
+      <div class="msg ${m.type === 'system' ? 'system-msg' : ''} ${m.type === 'file' ? 'file-msg' : ''}">
+        <span class="msg-time">${formatTime(m.time, true)}</span>
+        <span class="msg-user ${m.type}">${m.type === 'system' ? '⚙' : escHtml(m.username)}</span>
+        <span class="msg-text">${escHtml(m.text)}</span>
+      </div>
+    `).join('');
+
+    // Scroll to bottom
+    const log = document.getElementById('chat-log');
+    log.scrollTop = log.scrollHeight;
+  } catch(e) {
+    document.getElementById('chat-log').innerHTML = '<div class="loading">Error loading messages</div>';
+  }
+}
+
+// ── ACTIONS ───────────────────────────────────────────────────────────────────
+async function clearHistory() {
+  if (!currentRoom) return;
+  if (!confirm(`Clear all chat history for room "${currentRoom}"?`)) return;
+  await api(`/admin/rooms/${encodeURIComponent(currentRoom)}/messages`, { method: 'DELETE' });
+  showToast('Chat history cleared');
+  viewRoom(currentRoom);
+  loadRooms();
+}
+
+async function kickRoom() {
+  if (!currentRoom) return;
+  if (!confirm(`Kick all users from room "${currentRoom}"?`)) return;
+  await api(`/admin/rooms/${encodeURIComponent(currentRoom)}/kick`, { method: 'POST' });
+  showToast('All users kicked');
+  loadRooms();
+}
+
+// ── UTILITIES ─────────────────────────────────────────────────────────────────
+function escHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function formatTime(iso, short = false) {
+  if (!iso) return '–';
+  try {
+    const d = new Date(iso);
+    if (short) return d.toLocaleTimeString();
+    return d.toLocaleDateString() + ' ' + d.toLocaleTimeString();
+  } catch { return iso; }
+}
+
+function showToast(msg, error = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (error ? ' error' : '');
+  setTimeout(() => t.className = 'toast', 3000);
+}
+</script>
+</body>
+</html>
